@@ -1,0 +1,1238 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Shipping Rate Calculator — Xindus</title>
+<link rel="icon" type="image/svg+xml" href="XindusLogo.svg">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #214295;
+    --accent: #1695C6;
+    --orange: #F69322;
+    --dark: #424243;
+    --white: #ffffff;
+    --bg: #f0f4f8;
+    --card-shadow: 0 4px 24px rgba(33,66,149,0.10);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--blue) 0%, #1a3580 60%, var(--accent) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    background: rgba(246,147,34,0.12);
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .logo-wrap img {
+    height: 52px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
+  }
+  .header-title {
+    color: var(--white);
+  }
+  .header-title h1 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .header-title .subtitle {
+    font-size: 0.82rem;
+    opacity: 0.75;
+    margin-top: 3px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .header-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: var(--white);
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1100px;
+    margin: 36px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid #e8edf5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-header .icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-header .icon svg { width: 18px; height: 18px; fill: white; }
+  .card-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--blue);
+  }
+  .card-body { padding: 20px 24px; }
+
+  /* SERVICE TOGGLE */
+  .service-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    background: var(--bg);
+    padding: 5px;
+    border-radius: 30px;
+  }
+  .service-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 24px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    color: var(--dark);
+    background: transparent;
+    letter-spacing: 0.1px;
+  }
+  .service-btn.active {
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    color: var(--white);
+    box-shadow: 0 3px 12px rgba(33,66,149,0.28);
+  }
+  .service-btn:not(.active):hover {
+    background: rgba(33,66,149,0.07);
+    color: var(--blue);
+  }
+
+  /* FBA NOTICE */
+  .fba-notice {
+    display: none;
+    align-items: center;
+    gap: 9px;
+    background: linear-gradient(135deg, rgba(22,149,198,0.08), rgba(33,66,149,0.06));
+    border: 1px solid rgba(22,149,198,0.3);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .fba-notice.show { display: flex; }
+  .fba-notice svg { width: 16px; height: 16px; fill: var(--accent); flex-shrink: 0; }
+
+  /* FORM ELEMENTS */
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+  }
+  .form-group select,
+  .form-group input[type="number"],
+  .form-group input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #dde3ee;
+    border-radius: var(--radius-sm);
+    font-size: 0.93rem;
+    color: var(--dark);
+    background: var(--white);
+    transition: border-color 0.18s, box-shadow 0.18s;
+    outline: none;
+    appearance: none;
+  }
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23424243' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  .form-group select:focus,
+  .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(22,149,198,0.12);
+  }
+  .form-group input::placeholder { opacity: 0.45; }
+
+  .tier-group { display: none; }
+  .tier-group.show { display: block; }
+
+  /* VOL WEIGHT CALC — collapsible */
+  .collapsible { margin-bottom: 12px; }
+  .collapsible-trigger {
+    width: 100%;
+    background: none;
+    border: 1.5px solid #dde3ee;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--blue);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .collapsible-trigger:hover { background: rgba(33,66,149,0.04); border-color: var(--accent); }
+  .collapsible-trigger.open { border-color: var(--accent); background: rgba(22,149,198,0.05); border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom: none; }
+  .collapsible-trigger .chevron {
+    transition: transform 0.22s;
+    width: 16px; height: 16px;
+    fill: var(--accent);
+  }
+  .collapsible-trigger.open .chevron { transform: rotate(180deg); }
+  .collapsible-body {
+    display: none;
+    border: 1.5px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    padding: 14px;
+    background: rgba(22,149,198,0.03);
+  }
+  .collapsible-body.open { display: block; }
+  .dim-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .dim-row .form-group { margin-bottom: 0; }
+  .dim-row .form-group label { font-size: 0.72rem; }
+  .vol-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(33,66,149,0.06);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.84rem;
+    margin-top: 4px;
+  }
+  .vol-result span { color: var(--dark); opacity: 0.7; }
+  .vol-result strong { color: var(--blue); font-size: 0.95rem; }
+
+  /* CALC BUTTON */
+  .calc-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--orange) 0%, #e8820a 100%);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 16px rgba(246,147,34,0.32);
+    margin-top: 6px;
+  }
+  .calc-btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(246,147,34,0.4); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* ERROR */
+  .error-msg {
+    display: none;
+    background: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: #c0392b;
+    border-radius: 6px;
+    padding: 9px 14px;
+    font-size: 0.84rem;
+    margin-top: 12px;
+  }
+  .error-msg.show { display: block; }
+
+  /* RESULTS PANEL */
+  .results-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    color: var(--dark);
+    opacity: 0.35;
+    text-align: center;
+    gap: 12px;
+    padding: 40px;
+  }
+  .results-placeholder svg { width: 52px; height: 52px; fill: var(--blue); opacity: 0.4; }
+  .results-placeholder p { font-size: 0.92rem; }
+
+  .result-content { display: none; }
+  .result-content.show { display: block; }
+
+  /* RESULT SLAB BADGE */
+  .result-slab {
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    color: var(--white);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .result-slab .slab-label { font-size: 0.78rem; opacity: 0.8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .result-slab .slab-value { font-size: 1.05rem; font-weight: 700; }
+  .result-slab .tier-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* BREAKDOWN TABLE */
+  .breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+  .breakdown-table th {
+    text-align: left;
+    padding: 9px 12px;
+    background: var(--bg);
+    color: var(--dark);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.65;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e7f0;
+  }
+  .breakdown-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #edf0f7;
+    color: var(--dark);
+  }
+  .breakdown-table tr:last-child td { border-bottom: none; }
+  .breakdown-table .label-cell { font-weight: 500; opacity: 0.75; }
+  .breakdown-table .value-cell { font-weight: 600; text-align: right; }
+  .breakdown-table .total-row td {
+    background: linear-gradient(135deg, rgba(33,66,149,0.04), rgba(22,149,198,0.04));
+    font-weight: 700;
+    font-size: 1.02rem;
+    border-top: 2px solid #dde6f5;
+    border-bottom: none;
+  }
+  .breakdown-table .total-row .value-cell { color: var(--blue); font-size: 1.15rem; }
+
+  /* WAR SURCHARGE NOTE */
+  .surcharge-note {
+    font-size: 0.78rem;
+    color: var(--dark);
+    opacity: 0.55;
+    margin-top: -14px;
+    margin-bottom: 16px;
+    padding: 0 12px;
+    font-style: italic;
+  }
+
+  /* REMOTE AREA ALERT */
+  .remote-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(246,147,34,0.08);
+    border: 1px solid rgba(246,147,34,0.35);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 0.82rem;
+    color: #7a4a00;
+  }
+  .remote-alert svg { width: 16px; height: 16px; fill: var(--orange); flex-shrink: 0; margin-top: 1px; }
+
+  /* FBA COMPARISON TABLE */
+  .comparison-section { margin-top: 4px; }
+  .comparison-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--blue);
+    opacity: 0.7;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e0e7f0;
+  }
+  .comparison-table-wrap { overflow-x: auto; }
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+    min-width: 500px;
+  }
+  .comparison-table th {
+    padding: 7px 10px;
+    text-align: center;
+    background: var(--bg);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--dark);
+    opacity: 0.65;
+    border-bottom: 2px solid #e0e7f0;
+  }
+  .comparison-table th:first-child { text-align: left; }
+  .comparison-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid #edf0f7;
+    font-size: 0.83rem;
+  }
+  .comparison-table td:first-child { text-align: left; font-weight: 500; font-size: 0.78rem; }
+  .comparison-table .highlight-tier {
+    background: linear-gradient(135deg, rgba(33,66,149,0.06), rgba(22,149,198,0.06));
+    font-weight: 700;
+    color: var(--blue);
+  }
+  .comparison-table .highlight-tier td { color: var(--blue); }
+  .comparison-table tr:last-child td { border-bottom: none; }
+
+  /* COLLAPSIBLE INFO SECTIONS (bottom) */
+  .info-sections { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .info-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+  .info-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+  }
+  .info-trigger:hover { background: rgba(33,66,149,0.03); }
+  .info-trigger .it-icon {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .info-trigger .it-icon svg { width: 16px; height: 16px; fill: white; }
+  .info-trigger h3 { font-size: 0.9rem; font-weight: 700; color: var(--blue); flex: 1; }
+  .info-trigger .it-chevron { width: 16px; height: 16px; fill: var(--accent); transition: transform 0.22s; }
+  .info-trigger.open .it-chevron { transform: rotate(180deg); }
+  .info-body {
+    display: none;
+    padding: 4px 20px 20px;
+    border-top: 1px solid #edf0f7;
+  }
+  .info-body.open { display: block; }
+
+  /* REMOTE POSTCODES */
+  .postcode-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .postcode-chip {
+    background: rgba(33,66,149,0.07);
+    color: var(--blue);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+  }
+  .postcode-note {
+    font-size: 0.8rem;
+    color: var(--dark);
+    opacity: 0.65;
+    margin-top: 12px;
+    line-height: 1.55;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 6px;
+  }
+
+  /* T&C */
+  .tnc-list {
+    counter-reset: tnc;
+    list-style: none;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tnc-list li {
+    counter-increment: tnc;
+    display: flex;
+    gap: 12px;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--dark);
+    opacity: 0.85;
+  }
+  .tnc-list li::before {
+    content: counter(tnc);
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tnc-sub {
+    list-style: none;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tnc-sub li {
+    font-size: 0.81rem;
+    padding-left: 4px;
+    opacity: 0.8;
+  }
+  .tnc-sub li::before {
+    content: '–';
+    background: none;
+    color: var(--accent);
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 0.81rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 28px 20px;
+    font-size: 0.78rem;
+    color: var(--dark);
+    opacity: 0.4;
+    letter-spacing: 0.3px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    .main { grid-template-columns: 1fr; }
+    .header-inner { flex-wrap: wrap; gap: 16px; }
+    .header-badge { margin-left: 0; }
+  }
+  @media (max-width: 480px) {
+    .header-inner { padding: 20px 16px; }
+    .card-body { padding: 16px; }
+    .main { padding: 0 12px; margin: 20px auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="xindus-white-logo.svg" alt="Xindus Logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+      <span id="logo-text" style="display:none;color:#fff;font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;">XINDUS</span>
+    </div>
+    <div class="header-title">
+      <h1>UK Shipping Rate Calculator</h1>
+      <div class="subtitle">Internal Sales Tool</div>
+    </div>
+    <div class="header-badge">🇬🇧 United Kingdom</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- LEFT: INPUT PANEL -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+        </div>
+        <h2>Shipment Details</h2>
+      </div>
+      <div class="card-body">
+
+        <!-- SERVICE TOGGLE -->
+        <div class="service-toggle">
+          <button class="service-btn active" id="btn-lite" onclick="setService('lite')">Xindus Lite</button>
+          <button class="service-btn" id="btn-fba" onclick="setService('fba')">FBA Service</button>
+        </div>
+
+        <!-- FBA NOTICE -->
+        <div class="fba-notice" id="fba-notice">
+          <svg viewBox="0 0 24 24"><path d="M13 16h-2v2h2zm0-8h-2v6h2zm-1-6C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+          Delivery only via DPD Xpress Mode
+        </div>
+
+        <!-- TIER (always visible, options change per service) -->
+        <div class="form-group" id="tier-group">
+          <label>Rate Tier</label>
+          <select id="tier-select">
+            <option value="0">Tariff</option>
+            <option value="1">Enterprise</option>
+            <option value="2">Platinum</option>
+            <option value="3" selected>Gold (Default)</option>
+            <option value="4">Classic</option>
+            <option value="5">Burn 5%</option>
+            <option value="6">Burn 10%</option>
+            <option value="7">Burn 15%</option>
+            <option value="8">Burn 20%</option>
+          </select>
+        </div>
+
+        <!-- BILLABLE WEIGHT -->
+        <div class="form-group">
+          <label>Billable Weight (kg)</label>
+          <input type="number" id="weight-input" min="0.001" max="29" step="0.001" placeholder="e.g. 1.25">
+        </div>
+
+        <!-- VOLUME WEIGHT CALCULATOR -->
+        <div class="collapsible" id="vol-collapsible">
+          <button class="collapsible-trigger" id="vol-trigger" onclick="toggleCollapsible('vol')">
+            <span>Volume Weight Calculator</span>
+            <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <div class="collapsible-body" id="vol-body">
+            <div class="dim-row">
+              <div class="form-group">
+                <label>Length (cm)</label>
+                <input type="number" id="dim-l" min="0.1" max="61" step="0.1" placeholder="max 61">
+              </div>
+              <div class="form-group">
+                <label>Breadth (cm)</label>
+                <input type="number" id="dim-b" min="0.1" max="46" step="0.1" placeholder="max 46">
+              </div>
+              <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" id="dim-h" min="0.1" max="46" step="0.1" placeholder="max 46">
+              </div>
+            </div>
+            <div class="vol-result" id="vol-result">
+              <span>Volume Weight</span>
+              <strong id="vol-value">— kg</strong>
+            </div>
+            <div style="margin-top:8px;font-size:0.75rem;color:var(--dark);opacity:0.5;text-align:center;">L × B × H ÷ 5000 | Billable = max(actual, volume)</div>
+          </div>
+        </div>
+
+        <!-- CALC BUTTON -->
+        <button class="calc-btn" onclick="calculate()">Calculate Rate →</button>
+
+        <div class="error-msg" id="error-msg"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: RESULTS PANEL -->
+  <div>
+    <div class="card" id="results-card">
+      <div class="card-header">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        </div>
+        <h2>Rate Breakdown</h2>
+      </div>
+      <div class="card-body" id="results-body">
+
+        <div class="results-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+          <p>Enter shipment details and<br>click Calculate Rate</p>
+        </div>
+
+        <div class="result-content" id="result-content">
+
+          <div class="result-slab" id="result-slab">
+            <div>
+              <div class="slab-label">Weight Slab</div>
+              <div class="slab-value" id="slab-text">—</div>
+            </div>
+            <div>
+              <div class="slab-label">Billable Weight</div>
+              <div class="slab-value" id="billable-text">—</div>
+            </div>
+            <div class="tier-badge" id="tier-badge-text">Gold</div>
+          </div>
+
+          <table class="breakdown-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th style="text-align:right;">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="label-cell">Base Rate</td>
+                <td class="value-cell" id="base-rate-cell">—</td>
+              </tr>
+              <tr>
+                <td class="label-cell">War Surcharge</td>
+                <td class="value-cell" id="war-cell">—</td>
+              </tr>
+              <tr class="total-row">
+                <td class="label-cell">Total Shipping Cost</td>
+                <td class="value-cell" id="total-cell">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="surcharge-note" id="war-note"></div>
+
+          <div class="remote-alert">
+            <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            <div>
+              <strong>Remote Area Surcharge:</strong> Additional surcharge applies for remote UK postcodes (AB, IV, KW, HS, ZE and other remote zones). See postcode list below.
+            </div>
+          </div>
+
+          <!-- FBA Comparison Table -->
+          <div class="comparison-section" id="comparison-section" style="display:none;">
+            <div class="comparison-title">All-Tier Comparison — Same Slab</div>
+            <div class="comparison-table-wrap">
+              <table class="comparison-table" id="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Tier</th>
+                    <th>Base (₹)</th>
+                    <th>War Surcharge (₹)</th>
+                    <th>Total (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="comparison-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM INFO SECTIONS -->
+<div class="main" style="margin-top:0;">
+  <div style="grid-column: 1 / -1;" class="info-sections">
+
+    <!-- VOLUME WEIGHT INFO -->
+    <div class="info-card">
+      <button class="info-trigger" id="vol-info-trigger" onclick="toggleInfo('vol-info')">
+        <div class="it-icon" style="background: linear-gradient(135deg,#1695C6,#214295);">
+          <svg viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.09-.34.13-.53.13-.18 0-.37-.04-.53-.13l-7.9-4.44c-.32-.17-.53-.5-.53-.88v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.09.34-.13.53-.13.18 0 .37.04.53.13l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>
+        </div>
+        <h3>Volume Weight & Dimensions Guide</h3>
+        <svg class="it-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="info-body" id="vol-info-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:12px;">
+          <div style="background:var(--bg);border-radius:8px;padding:14px;">
+            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.6;margin-bottom:6px;">Formula</div>
+            <div style="font-size:0.95rem;font-weight:600;color:var(--blue);">L × B × H ÷ 5000</div>
+            <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">Dimensions in centimetres</div>
+          </div>
+          <div style="background:var(--bg);border-radius:8px;padding:14px;">
+            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.6;margin-bottom:6px;">Max Dimensions</div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--blue);">61 × 46 × 46 cm</div>
+            <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">L × B × H</div>
+          </div>
+          <div style="background:var(--bg);border-radius:8px;padding:14px;">
+            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.6;margin-bottom:6px;">Max Weight</div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--blue);">29 kg</div>
+            <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">Actual or volume weight</div>
+          </div>
+          <div style="background:var(--bg);border-radius:8px;padding:14px;">
+            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;opacity:0.6;margin-bottom:6px;">Cylindrical / Triangular</div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--blue);">Longest side ≤ 90 cm</div>
+            <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">L + 2× diameter ≤ 104 cm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REMOTE POSTCODES -->
+    <div class="info-card">
+      <button class="info-trigger" id="remote-trigger" onclick="toggleInfo('remote')">
+        <div class="it-icon" style="background: linear-gradient(135deg,var(--orange),#e8820a);">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <h3>Remote UK Postcodes</h3>
+        <svg class="it-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="info-body" id="remote-body">
+        <div class="postcode-grid">
+          <span class="postcode-chip">AB</span>
+          <span class="postcode-chip">BT</span>
+          <span class="postcode-chip">DD</span>
+          <span class="postcode-chip">DG</span>
+          <span class="postcode-chip">EH</span>
+          <span class="postcode-chip">FK</span>
+          <span class="postcode-chip">G</span>
+          <span class="postcode-chip">GY</span>
+          <span class="postcode-chip">HS1–HS9</span>
+          <span class="postcode-chip">IM</span>
+          <span class="postcode-chip">IV1–IV63</span>
+          <span class="postcode-chip">IV36–IV40</span>
+          <span class="postcode-chip">JE</span>
+          <span class="postcode-chip">KA</span>
+          <span class="postcode-chip">KW1–KW14</span>
+          <span class="postcode-chip">KW15–KW17</span>
+          <span class="postcode-chip">KY</span>
+          <span class="postcode-chip">ML</span>
+          <span class="postcode-chip">PA</span>
+          <span class="postcode-chip">PA20–PA78</span>
+          <span class="postcode-chip">PA41–PA49</span>
+          <span class="postcode-chip">PA60–PA78</span>
+          <span class="postcode-chip">PH</span>
+          <span class="postcode-chip">PH17–PH26</span>
+          <span class="postcode-chip">PH30–PH44</span>
+          <span class="postcode-chip">PH49–PH50</span>
+          <span class="postcode-chip">PO30–PO41</span>
+          <span class="postcode-chip">TD</span>
+          <span class="postcode-chip">ZE1–ZE3</span>
+          <span class="postcode-chip">TR21–TR25</span>
+        </div>
+        <div class="postcode-note">
+          Remote Area Surcharge is applicable for all postcodes listed above. This is an additional charge on top of the base shipping rate and war surcharge. Please confirm with the operations team for the current remote area surcharge amount before quoting customers.
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS & CONDITIONS -->
+    <div class="info-card">
+      <button class="info-trigger" id="tnc-trigger" onclick="toggleInfo('tnc')">
+        <div class="it-icon" style="background: linear-gradient(135deg,#214295,#1a3580);">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        </div>
+        <h3>Terms &amp; Conditions</h3>
+        <svg class="it-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="info-body" id="tnc-body">
+        <ul class="tnc-list">
+          <li>Above rates are on DDP (Delivered Duty Paid) Basis.</li>
+          <li>War Surcharge of INR 250 per kg is applicable on all shipments.</li>
+          <li>Single Box Must Not Exceed 29 Kg either in Actual Weight or Volume Weight.</li>
+          <li>Maximum Dimension Allowed: 61 cm × 46 cm × 46 cm. For cylindrical and triangular parts, the longest side must not exceed 90 cm; length + double diameter must not exceed 104 cm.</li>
+          <li>Volume Weight will be calculated as L × B × H ÷ 5000 (dimensions in centimetres).</li>
+          <li>Delivery to FBA Facility can only happen in Xpress Mode via DPD.</li>
+          <li>Remote Area Surcharge will be applicable for Remote Zones. Please check the remote postcode list.</li>
+          <li>Consignee email ID and Phone Number are mandatory for all shipments.</li>
+          <li>Address correction charges will be ₹1,250 + GST or ₹65/kg whichever is higher.</li>
+          <li>
+            Address correction charges apply in the following cases:
+            <ul class="tnc-sub">
+              <li>Unable to deliver due to address problems</li>
+              <li>Spelling mistakes or missing words</li>
+              <li>Unable to contact consignee or incorrect contact details</li>
+              <li>Shipper or consignee gives instructions to change delivery address after dispatch</li>
+              <li>Given address on AWB is wrong or incomplete</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Xindus Internal Sales Tool &nbsp;·&nbsp; UK Shipping Rate Calculator &nbsp;·&nbsp; Rates subject to change without notice
+</footer>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+// Tier names per service (index 0–8)
+// Xindus Lite: Tariff, Enterprise, Platinum, Gold, Classic, Burn5, Burn10, Burn15, Burn20
+// FBA:         COGS,   Enterprise, Platinum, Gold, Classic, Burn5, Burn10, Burn15, Burn20
+const TIER_NAMES_LITE = ['Tariff','Enterprise','Platinum','Gold','Classic','Burn 5%','Burn 10%','Burn 15%','Burn 20%'];
+const TIER_NAMES_FBA  = ['COGS','Enterprise','Platinum','Gold','Classic','Burn 5%','Burn 10%','Burn 15%','Burn 20%'];
+
+// Fixed-slab data: [upperKg, [lite0..lite8], [fba0..fba8]]
+// Xindus Lite rates from Rates sheet (Tariff,Enterprise,Platinum,Gold,Classic,Burn5,Burn10,Burn15,Burn20)
+// FBA rates from FBA sheet (COGS,Enterprise,Platinum,Gold,Classic,Burn5,Burn10,Burn15,Burn20)
+const FIXED_SLABS = [
+  [0.05, [279,218,229,246,251,204,193,183,172],  [690,700,735,789,807,655,621,586,552]],
+  [0.1,  [302,236,248,266,272,221,209,198,186],  [707,717,754,809,828,672,637,601,566]],
+  [0.15, [325,253,266,286,292,237,225,212,200],  [725,735,773,829,848,689,652,616,580]],
+  [0.2,  [348,271,285,306,313,254,241,227,214],  [742,753,791,849,869,705,668,631,594]],
+  [0.25, [370,289,304,326,333,271,256,242,228],  [760,771,810,869,889,722,684,646,608]],
+  [0.3,  [393,307,322,346,354,287,272,257,242],  [777,788,829,889,910,739,700,661,622]],
+  [0.4,  [435,339,357,383,392,318,301,285,268],  [810,821,863,926,947,769,729,688,648]],
+  [0.5,  [481,375,394,423,433,351,333,314,296],  [845,857,901,966,988,803,760,718,676]],
+  [0.6,  [526,410,432,463,474,385,364,344,324],  [880,892,938,1006,1029,836,792,748,704]],
+  [0.7,  [572,446,469,503,515,418,396,374,352],  [915,928,975,1047,1070,869,823,778,732]],
+  [0.8,  [617,481,506,543,556,451,427,404,380],  [950,963,1013,1087,1111,902,855,807,760]],
+  [0.9,  [663,517,543,583,597,484,459,433,408],  [985,999,1050,1127,1152,936,886,837,788]],
+  [1.0,  [708,552,581,623,637,518,490,463,436],  [1020,1034,1087,1167,1193,969,918,867,816]],
+  [1.1,  [754,588,618,663,678,551,522,493,464],  [1055,1070,1124,1207,1234,1002,949,897,844]],
+  [1.2,  [799,623,655,703,719,584,553,523,492],  [1090,1105,1162,1247,1275,1035,981,926,872]],
+  [1.3,  [845,659,693,743,760,617,585,552,520],  [1125,1141,1199,1287,1316,1069,1012,956,900]],
+  [1.4,  [890,694,730,784,801,651,616,582,548],  [1160,1176,1236,1327,1357,1102,1044,986,928]],
+  [1.5,  [936,730,767,824,842,684,648,612,576],  [1195,1212,1274,1367,1398,1135,1075,1016,956]],
+  [1.6,  [1144,892,938,1007,1029,836,792,748,704], [1230,1247,1311,1407,1439,1168,1107,1045,984]],
+  [1.7,  [1189,928,975,1047,1070,869,823,778,732], [1265,1283,1348,1447,1480,1202,1138,1075,1012]],
+  [1.8,  [1235,963,1013,1087,1111,902,855,807,760],[1300,1318,1386,1487,1521,1235,1170,1105,1040]],
+  [1.9,  [1280,999,1050,1127,1152,936,886,837,788],[1335,1354,1423,1527,1562,1268,1201,1135,1068]],
+  [2.0,  [1326,1034,1087,1167,1193,969,918,867,816],[1370,1389,1460,1567,1603,1301,1233,1164,1096]],
+  [2.5,  [1526,1190,1251,1343,1374,1115,1057,998,939], [1524,1545,1625,1743,1783,1448,1372,1295,1219]],
+  [3.0,  [1720,1341,1410,1513,1548,1257,1190,1124,1058],[1673,1696,1783,1914,1957,1589,1505,1422,1338]],
+  [3.5,  [1947,1519,1597,1714,1752,1423,1348,1273,1198],[1848,1874,1970,2114,2162,1755,1663,1571,1478]],
+  [4.0,  [2175,1696,1783,1914,1957,1589,1506,1422,1338],[2023,2051,2156,2314,2367,1922,1821,1719,1618]],
+  [4.5,  [2402,1874,1970,2114,2162,1756,1663,1571,1478],[2198,2229,2343,2514,2572,2088,1978,1868,1758]],
+  [5.0,  [2630,2051,2156,2314,2367,1922,1821,1720,1618],[2373,2406,2530,2715,2776,2254,2136,2017,1898]],
+  [5.5,  [2857,2229,2343,2515,2572,2088,1978,1868,1758],[2548,2584,2716,2915,2981,2421,2293,2166,2038]],
+  [6.0,  [3085,2406,2530,2715,2776,2254,2136,2017,1898],[2723,2761,2903,3115,3186,2587,2451,2315,2178]],
+  [6.5,  [3313,2584,2716,2915,2981,2421,2293,2166,2038],[2898,2939,3089,3315,3391,2753,2608,2463,2318]],
+  [7.0,  [3540,2761,2903,3115,3186,2587,2451,2315,2179],[3073,3116,3276,3516,3596,2920,2766,2612,2459]],
+  [7.5,  [3768,2939,3089,3316,3391,2753,2608,2463,2319],[3248,3294,3463,3716,3800,3086,2923,2761,2599]],
+  [8.0,  [3995,3116,3276,3516,3596,2920,2766,2612,2459],[3423,3471,3649,3916,4005,3252,3081,2910,2739]],
+  [8.5,  [4223,3294,3463,3716,3801,3086,2923,2761,2599],[3598,3649,3836,4116,4210,3418,3238,3059,2879]],
+  [9.0,  [4450,3471,3649,3916,4005,3252,3081,2910,2739],[3773,3826,4022,4317,4415,3585,3396,3207,3019]],
+  [9.5,  [4678,3649,3836,4117,4210,3418,3239,3059,2879],[3948,4004,4209,4517,4620,3751,3554,3356,3159]],
+  [10.0, [4905,3826,4022,4317,4415,3585,3396,3207,3019],[4123,4181,4396,4717,4824,3917,3711,3505,3299]],
+];
+
+// Per-kg slabs: [lowerKg, upperKg, [litePerKg x9], [fbaPerKg x9]]
+const PER_KG_SLABS = [
+  [10, 15, [503,393,413,443,453,368,348,329,310], [416,422,444,476,487,395,375,354,333]],
+  [15, 20, [541,422,444,476,487,396,375,354,333], [397,403,424,454,465,377,358,338,318]],
+  [20, 25, [513,400,421,451,462,375,355,335,316], [380,385,405,435,445,361,342,323,304]],
+  [25, 30, [502,392,412,442,452,367,348,328,309], [375,380,399,429,438,356,337,318,300]],
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentService = 'lite'; // 'lite' | 'fba'
+
+// ============================================================
+// UI TOGGLES
+// ============================================================
+function setService(s) {
+  currentService = s;
+  document.getElementById('btn-lite').classList.toggle('active', s === 'lite');
+  document.getElementById('btn-fba').classList.toggle('active', s === 'fba');
+  document.getElementById('fba-notice').classList.toggle('show', s === 'fba');
+  // Always show tier group — rebuild options for the active service
+  const names = s === 'lite' ? TIER_NAMES_LITE : TIER_NAMES_FBA;
+  const sel = document.getElementById('tier-select');
+  sel.innerHTML = names.map((n, i) =>
+    `<option value="${i}"${i === 3 ? ' selected' : ''}>${n}${i === 3 ? ' (Default)' : ''}</option>`
+  ).join('');
+  // Reset results
+  document.getElementById('placeholder').style.display = '';
+  document.getElementById('result-content').classList.remove('show');
+  document.getElementById('error-msg').classList.remove('show');
+}
+
+function toggleCollapsible(id) {
+  const trigger = document.getElementById(id + '-trigger');
+  const body    = document.getElementById(id + '-body');
+  trigger.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function toggleInfo(id) {
+  const trigger = document.getElementById(id + '-trigger');
+  const body    = document.getElementById(id + '-body');
+  trigger.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// Live volume weight
+['dim-l','dim-b','dim-h'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateVolWeight);
+});
+
+function updateVolWeight() {
+  const l = parseFloat(document.getElementById('dim-l').value) || 0;
+  const b = parseFloat(document.getElementById('dim-b').value) || 0;
+  const h = parseFloat(document.getElementById('dim-h').value) || 0;
+  if (l > 0 && b > 0 && h > 0) {
+    const vw = (l * b * h) / 5000;
+    document.getElementById('vol-value').textContent = vw.toFixed(3) + ' kg';
+  } else {
+    document.getElementById('vol-value').textContent = '— kg';
+  }
+}
+
+// ============================================================
+// LOOKUP HELPERS
+// ============================================================
+function findSlab(weight) {
+  // Returns { type:'fixed'|'perkg', slabIndex, lowerKg, upperKg }
+  // Fixed slabs: weight > previous upper and <= this upper
+  let prevUpper = 0;
+  for (let i = 0; i < FIXED_SLABS.length; i++) {
+    const upper = FIXED_SLABS[i][0];
+    if (weight > prevUpper && weight <= upper) {
+      return { type: 'fixed', idx: i, lower: prevUpper, upper: upper };
+    }
+    prevUpper = upper;
+  }
+  // Per-kg slabs
+  for (let i = 0; i < PER_KG_SLABS.length; i++) {
+    const [lo, hi] = PER_KG_SLABS[i];
+    if (weight > lo && weight <= hi) {
+      return { type: 'perkg', idx: i, lower: lo, upper: hi };
+    }
+  }
+  return null;
+}
+
+function getBaseRate(slab, weight, tierIdx, service) {
+  if (slab.type === 'fixed') {
+    const arr = service === 'lite' ? FIXED_SLABS[slab.idx][1] : FIXED_SLABS[slab.idx][2];
+    return arr[tierIdx];
+  } else {
+    const arr = service === 'lite' ? PER_KG_SLABS[slab.idx][2] : PER_KG_SLABS[slab.idx][3];
+    return weight * arr[tierIdx];
+  }
+}
+
+function getWarSurcharge(slab, weight) {
+  if (slab.type === 'fixed') {
+    return Math.max(18, 250 * slab.upper);
+  } else {
+    return 250 * weight;
+  }
+}
+
+// ============================================================
+// CALCULATE
+// ============================================================
+function calculate() {
+  const errorEl = document.getElementById('error-msg');
+  errorEl.classList.remove('show');
+
+  // Determine billable weight
+  const rawWeight = parseFloat(document.getElementById('weight-input').value);
+
+  // Volume weight (if entered)
+  const l = parseFloat(document.getElementById('dim-l').value) || 0;
+  const b = parseFloat(document.getElementById('dim-b').value) || 0;
+  const h = parseFloat(document.getElementById('dim-h').value) || 0;
+  const volOpen = document.getElementById('vol-body').classList.contains('open');
+  const hasVol = volOpen && l > 0 && b > 0 && h > 0;
+  const volWeight = hasVol ? (l * b * h) / 5000 : 0;
+
+  let billable;
+  let actualW = isNaN(rawWeight) ? null : rawWeight;
+
+  if (actualW === null && !hasVol) {
+    showError('Please enter a billable weight.');
+    return;
+  }
+  if (actualW === null) {
+    billable = volWeight;
+  } else if (hasVol) {
+    billable = Math.max(actualW, volWeight);
+  } else {
+    billable = actualW;
+  }
+
+  // Dimension validation
+  if (hasVol) {
+    if (l > 61 || b > 46 || h > 46) {
+      showError('Dimensions exceed maximum allowed (61 × 46 × 46 cm).');
+      return;
+    }
+  }
+
+  // Weight validation
+  if (billable <= 0) {
+    showError('Billable weight must be greater than 0.');
+    return;
+  }
+  if (billable > 29) {
+    showError('Maximum shipment weight is 29 kg. Single box must not exceed 29 kg.');
+    return;
+  }
+
+  const slab = findSlab(billable);
+  if (!slab) {
+    showError('Weight out of supported range (0.001–29 kg).');
+    return;
+  }
+
+  const tierIdx = parseInt(document.getElementById('tier-select').value);
+  const service = currentService;
+
+  const baseRate  = getBaseRate(slab, billable, tierIdx, service);
+  const warSurch  = getWarSurcharge(slab, billable);
+  const total     = baseRate + warSurch;
+
+  // Format slab label
+  const slabLabel = `${slab.lower}–${slab.upper} kg`;
+  const tierNames = service === 'lite' ? TIER_NAMES_LITE : TIER_NAMES_FBA;
+  const tierLabel = tierNames[tierIdx];
+
+  // Fill result
+  document.getElementById('slab-text').textContent = slabLabel;
+  document.getElementById('billable-text').textContent = billable.toFixed(3) + ' kg';
+  document.getElementById('tier-badge-text').textContent = tierLabel;
+  if (slab.type === 'perkg') {
+    const arr = service === 'lite' ? PER_KG_SLABS[slab.idx][2] : PER_KG_SLABS[slab.idx][3];
+    const perKgRate = arr[tierIdx];
+    document.getElementById('base-rate-cell').innerHTML =
+      `₹${fmt(baseRate)} <span style="font-size:0.78rem;font-weight:400;opacity:0.65;">(₹${perKgRate}/kg × ${billable.toFixed(3)} kg)</span>`;
+  } else {
+    document.getElementById('base-rate-cell').textContent = '₹' + fmt(baseRate);
+  }
+  document.getElementById('war-cell').textContent = '₹' + fmt(warSurch);
+  document.getElementById('total-cell').textContent = '₹' + fmt(total);
+
+  // War surcharge note
+  let warNote = '';
+  if (slab.type === 'fixed') {
+    warNote = `War Surcharge = max(₹18, ₹250 × ${slab.upper} kg) = ₹${fmt(warSurch)}`;
+  } else {
+    warNote = `War Surcharge = ₹250 × ${billable.toFixed(3)} kg = ₹${fmt(warSurch)}`;
+  }
+  document.getElementById('war-note').textContent = warNote;
+
+  // Comparison table (both services)
+  const compSection = document.getElementById('comparison-section');
+  compSection.style.display = '';
+  buildComparisonTable(slab, billable, tierIdx, warSurch, service);
+
+  // Show results
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('result-content').classList.add('show');
+}
+
+function buildComparisonTable(slab, billable, selectedTier, warSurch, service) {
+  const tierNames = service === 'lite' ? TIER_NAMES_LITE : TIER_NAMES_FBA;
+  const tbody = document.getElementById('comparison-tbody');
+  tbody.innerHTML = '';
+  for (let t = 0; t < 9; t++) {
+    const base  = getBaseRate(slab, billable, t, service);
+    const war   = getWarSurcharge(slab, billable);
+    const tot   = base + war;
+    const tr = document.createElement('tr');
+    if (t === selectedTier) tr.className = 'highlight-tier';
+    let baseCell;
+    if (slab.type === 'perkg') {
+      const arr = service === 'lite' ? PER_KG_SLABS[slab.idx][2] : PER_KG_SLABS[slab.idx][3];
+      baseCell = `₹${fmt(base)} <span style="font-size:0.75rem;opacity:0.6;">(₹${arr[t]}/kg)</span>`;
+    } else {
+      baseCell = `₹${fmt(base)}`;
+    }
+    tr.innerHTML = `
+      <td>${tierNames[t]}${t === selectedTier ? ' ★' : ''}</td>
+      <td>${baseCell}</td>
+      <td>₹${fmt(war)}</td>
+      <td>₹${fmt(tot)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('placeholder').style.display = '';
+  document.getElementById('result-content').classList.remove('show');
+}
+
+function fmt(n) {
+  return Math.round(n).toLocaleString('en-IN');
+}
+
+// Allow Enter key on weight input
+document.getElementById('weight-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') calculate();
+});
+</script>
+</body>
+</html>
