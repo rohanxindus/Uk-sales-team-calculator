@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -393,7 +393,15 @@
     border-top: 2px solid #dde6f5;
     border-bottom: none;
   }
-  .breakdown-table .total-row .value-cell { color: var(--blue); font-size: 1.15rem; }
+  .breakdown-table .total-row .value-cell { color: var(--blue); font-size: 1.05rem; }
+  .breakdown-table .grand-total-row td {
+    background: linear-gradient(135deg, rgba(33,66,149,0.10), rgba(22,149,198,0.08));
+    font-weight: 800;
+    font-size: 1.08rem;
+    border-top: 2px solid var(--blue);
+    border-bottom: none;
+  }
+  .breakdown-table .grand-total-row .value-cell { color: var(--orange); font-size: 1.3rem; }
 
   /* WAR SURCHARGE NOTE */
   .surcharge-note {
@@ -759,8 +767,16 @@
                 <td class="value-cell" id="war-cell">—</td>
               </tr>
               <tr class="total-row">
-                <td class="label-cell">Total Shipping Cost</td>
+                <td class="label-cell">Subtotal (Base + War Surcharge)</td>
                 <td class="value-cell" id="total-cell">—</td>
+              </tr>
+              <tr>
+                <td class="label-cell">GST (18%)</td>
+                <td class="value-cell" id="gst-cell">—</td>
+              </tr>
+              <tr class="grand-total-row">
+                <td class="label-cell">Grand Total (incl. GST)</td>
+                <td class="value-cell" id="grand-total-cell">—</td>
               </tr>
             </tbody>
           </table>
@@ -783,7 +799,9 @@
                     <th>Tier</th>
                     <th>Base (₹)</th>
                     <th>War Surcharge (₹)</th>
-                    <th>Total (₹)</th>
+                    <th>Subtotal (₹)</th>
+                    <th>GST 18% (₹)</th>
+                    <th>Grand Total (₹)</th>
                   </tr>
                 </thead>
                 <tbody id="comparison-tbody"></tbody>
@@ -1150,6 +1168,8 @@ function calculate() {
   const baseRate  = getBaseRate(slab, billable, tierIdx, service);
   const warSurch  = getWarSurcharge(slab, billable);
   const total     = baseRate + warSurch;
+  const gst       = total * 0.18;
+  const grandTotal = total + gst;
 
   // Format slab label
   const slabLabel = `${slab.lower}–${slab.upper} kg`;
@@ -1170,6 +1190,8 @@ function calculate() {
   }
   document.getElementById('war-cell').textContent = '₹' + fmt(warSurch);
   document.getElementById('total-cell').textContent = '₹' + fmt(total);
+  document.getElementById('gst-cell').textContent = '₹' + fmt(gst);
+  document.getElementById('grand-total-cell').textContent = '₹' + fmt(grandTotal);
 
   // War surcharge note
   let warNote = '';
@@ -1207,11 +1229,15 @@ function buildComparisonTable(slab, billable, selectedTier, warSurch, service) {
     } else {
       baseCell = `₹${fmt(base)}`;
     }
+    const rowGst = tot * 0.18;
+    const rowGrand = tot + rowGst;
     tr.innerHTML = `
       <td>${tierNames[t]}${t === selectedTier ? ' ★' : ''}</td>
       <td>${baseCell}</td>
       <td>₹${fmt(war)}</td>
       <td>₹${fmt(tot)}</td>
+      <td>₹${fmt(rowGst)}</td>
+      <td style="font-weight:700;color:var(--orange);">₹${fmt(rowGrand)}</td>
     `;
     tbody.appendChild(tr);
   }
