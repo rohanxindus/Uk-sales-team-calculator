@@ -914,7 +914,7 @@
       <div class="info-body" id="tnc-body">
         <ul class="tnc-list">
           <li>Above rates are on DDP (Delivered Duty Paid) Basis.</li>
-          <li>War Surcharge of INR 250 per kg is applicable on all shipments.</li>
+          <li>War Surcharge of INR 150 per kg is applicable on all shipments.</li>
           <li>Single Box Must Not Exceed 29 Kg either in Actual Weight or Volume Weight.</li>
           <li>Maximum Dimension Allowed: 61 cm × 46 cm × 46 cm. For cylindrical and triangular parts, the longest side must not exceed 90 cm; length + double diameter must not exceed 104 cm.</li>
           <li>Volume Weight will be calculated as L × B × H ÷ 5000 (dimensions in centimetres).</li>
@@ -1099,9 +1099,9 @@ function getBaseRate(slab, weight, tierIdx, service) {
 
 function getWarSurcharge(slab, weight) {
   if (slab.type === 'fixed') {
-    return Math.max(18, 250 * slab.upper);
+    return Math.max(18, 150 * slab.upper);
   } else {
-    return 250 * weight;
+    return 150 * weight;
   }
 }
 
@@ -1196,9 +1196,9 @@ function calculate() {
   // War surcharge note
   let warNote = '';
   if (slab.type === 'fixed') {
-    warNote = `War Surcharge = max(₹18, ₹250 × ${slab.upper} kg) = ₹${fmt(warSurch)}`;
+    warNote = `War Surcharge = max(₹18, ₹150 × ${slab.upper} kg) = ₹${fmt(warSurch)}`;
   } else {
-    warNote = `War Surcharge = ₹250 × ${billable.toFixed(3)} kg = ₹${fmt(warSurch)}`;
+    warNote = `War Surcharge = ₹150 × ${billable.toFixed(3)} kg = ₹${fmt(warSurch)}`;
   }
   document.getElementById('war-note').textContent = warNote;
 
