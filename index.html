@@ -597,6 +597,71 @@
     margin-top: 0;
   }
 
+  /* RATE CARDS DOWNLOAD SECTION */
+  .rate-cards-section {
+    margin-top: 0;
+  }
+  .rate-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .rate-card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(33,66,149,0.04), rgba(22,149,198,0.04));
+    border: 1.5px solid #dde3ee;
+    border-radius: var(--radius-sm);
+    padding: 16px 14px;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .rate-card-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(22,149,198,0.13);
+  }
+  .rate-card-tier-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--blue);
+    opacity: 0.75;
+  }
+  .rate-card-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-align: center;
+  }
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--accent) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 3px 12px rgba(33,66,149,0.22);
+    white-space: nowrap;
+  }
+  .download-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(33,66,149,0.3);
+  }
+  .download-btn:active { transform: translateY(0); }
+  .download-btn svg { width: 15px; height: 15px; fill: white; flex-shrink: 0; }
+
   /* FOOTER */
   footer {
     text-align: center;
@@ -936,6 +1001,58 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- RATE CARDS DOWNLOAD SECTION -->
+<div class="main rate-cards-section" style="margin-top:0;">
+  <div style="grid-column: 1 / -1;">
+    <div class="info-card">
+      <button class="info-trigger open" id="rate-cards-trigger" onclick="toggleInfo('rate-cards')">
+        <div class="it-icon" style="background: linear-gradient(135deg, var(--blue), var(--accent));">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <h3>Download Rate Cards — Xindus Normal Service (UK)</h3>
+        <svg class="it-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="info-body open" id="rate-cards-body">
+        <div style="font-size:0.8rem;color:var(--dark);opacity:0.6;margin-bottom:4px;padding-top:4px;">Share these rate cards directly with customers. Each PDF contains the full weight-slab pricing for the respective tier.</div>
+        <div class="rate-cards-grid">
+          <div class="rate-card-item">
+            <div class="rate-card-tier-label">Tier</div>
+            <div class="rate-card-name">Gold</div>
+            <a class="download-btn" href="pdfs/UK-rates-Gold.pdf" download="Xindus-UK-Rates-Gold.pdf">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              Download PDF
+            </a>
+          </div>
+          <div class="rate-card-item">
+            <div class="rate-card-tier-label">Tier</div>
+            <div class="rate-card-name">Platinum</div>
+            <a class="download-btn" href="pdfs/UK-rates-Platinum.pdf" download="Xindus-UK-Rates-Platinum.pdf">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              Download PDF
+            </a>
+          </div>
+          <div class="rate-card-item">
+            <div class="rate-card-tier-label">Tier</div>
+            <div class="rate-card-name">Enterprise</div>
+            <a class="download-btn" href="pdfs/UK-rates-Enterprise.pdf" download="Xindus-UK-Rates-Enterprise.pdf">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              Download PDF
+            </a>
+          </div>
+          <div class="rate-card-item">
+            <div class="rate-card-tier-label">Tier</div>
+            <div class="rate-card-name">Classic</div>
+            <a class="download-btn" href="pdfs/UK-rates-Classic.pdf" download="Xindus-UK-Rates-Classic.pdf">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              Download PDF
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
